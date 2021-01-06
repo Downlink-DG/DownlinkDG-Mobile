@@ -1,0 +1,29 @@
+<Panel ux:Class="StaticResources">
+	<Font ux:Global="OpenSansBold" File="Assets/Fonts/OpenSans-Bold.ttf" />
+	<Font ux:Global="OpenSansBoldItalic" File="Assets/Fonts/OpenSans-BoldItalic.ttf" />
+	<Font ux:Global="OpenSansExtraBold" File="Assets/Fonts/OpenSans-ExtraBold.ttf" />
+	<Font ux:Global="OpenSansExtraBoldItalic" File="Assets/Fonts/OpenSans-ExtraBoldItalic.ttf" />
+	<Font ux:Global="OpenSansItalic" File="Assets/Fonts/OpenSans-Italic.ttf" />
+	<Font ux:Global="OpenSansLight" File="Assets/Fonts/OpenSans-Light.ttf" />
+	<Font ux:Global="OpenSansLightItalic" File="Assets/Fonts/OpenSans-LightItalic.ttf" />
+	<Font ux:Global="OpenSansRegular" File="Assets/Fonts/OpenSans-Regular.ttf" />
+	<Font ux:Global="OpenSansSemiBold" File="Assets/Fonts/OpenSans-SemiBold.ttf" />
+	<Font ux:Global="OpenSansSemiBoldItalic" File="Assets/Fonts/OpenSans-SemiBoldItalic.ttf" />
+	<Font ux:Global="MaterialIcons" File="Assets/Fonts/MaterialIcons-Regular.ttf" />
+
+	<float4 ux:Global="PrimaryColor" ux:Value="#ffffff" />
+	<float4 ux:Global="PrimarySubColor" ux:Value="#fffb" />
+	<float4 ux:Global="AccentColor" ux:Value="#263238" />
+	<float4 ux:Global="MutedColor" ux:Value="#888888" />
+
+	<Text Font="OpenSansRegular" />
+
+	<Text ux:Class="MaterialIcon" Font="MaterialIcons" Color="PrimaryColor" />
+
+	<Text ux:Class="PublishedText" Font="OpenSansLight" Color="PrimarySubColor" FontSize="12" />
+	<Text ux:Class="TitleText" Font="OpenSansLight" Color="PrimaryColor" FontSize="27" TextWrapping="Wrap" Alignment="CenterLeft" />
+
+	<Text ux:Class="SmallHeaderText" Font="OpenSansRegular" FontSize="17" Color="PrimaryColor" Margin="0,15,0,0" />
+	<Text ux:Class="BodyText" Font="OpenSansRegular" FontSize="13" Color="AccentColor" TextWrapping="Wrap" />
+	<Text ux:Class="MutedText" Font="OpenSansRegular" FontSize="12" Color="MutedColor" TextWrapping="Wrap" />
+</Panel>

@@ -1,0 +1,5 @@
+<Panel ux:Class="BackButton" HitTestMode="LocalBounds">
+	<Image Width="24" Height="24" StretchMode="Uniform" Margin="16">
+		<MaterialIcon Value="arrow_back" FontSize="22" Alignment="VerticalCenter" />
+	</Image>
+</Panel>

@@ -1,0 +1,301 @@
+<App Background="#FFF">
+    <iOS.StatusBarConfig Style="Light" Animation="Slide" IsVisible="True" />
+    <Android.StatusBarConfig Color="#0003" IsVisible="True" />
+
+    <JavaScript>
+        var Observable = require("FuseJS/Observable");
+        var InterApp = require("FuseJS/InterApp");
+        var unoproj = require('Bolav/UnoProject');
+        var Moment = require("Assets/JS/Moment-with-locales.js");
+        var data = new Observable();
+        var newData = new Observable();
+        var skip = 0;
+        var errorReload = Observable(false);
+        var errorAddNews = Observable(false);
+        var isLoading = Observable(false);
+        var loadingNews = Observable(false);
+
+        function addNews() {
+            loadingNews.value = true;
+            skip = (skip + 5);
+            fetch('https://downlinkdg.no/api/news/' + 5 + '/' + skip)
+            .then(function(response) { return response.json(); })
+            .then(function(responseObject) {
+                data.addAll(responseObject.entries);
+                errorAddNews.value = false;
+            }).catch(function(err) {
+                console.log(err);
+                errorAddNews.value = true;
+            });
+            loadingNews.value = false;
+        }
+
+        function endLoading() {
+            isLoading.value = false;
+        }
+
+        function reloadHandler() {
+            isLoading.value = true;
+            data.clear();
+            errorAddNews.value = false;
+            skip = 0;
+            fetch('https://downlinkdg.no/api/news/' + 5 + '/' + skip)
+            .then(function(response) { return response.json(); })
+            .then(function(responseObject) {
+                errorReload.value = false;
+                data.addAll(responseObject.entries);
+                endLoading();
+            }).catch(function(err) {
+                errorReload.value = true;
+                endLoading();
+            });
+        }
+
+        function openInfihex() {
+            InterApp.launchUri('https://www.infihex.com/');
+        }
+
+        function convertDateTime(datetime) {
+            return Moment(datetime).format('dddd');
+        }
+
+        reloadHandler();
+
+        module.exports = {
+            errorReload: errorReload,
+            errorAddNews: errorAddNews,
+            data: data,
+            addNews: addNews,
+            isLoading: isLoading,
+            reloadHandler: reloadHandler,
+            loadingNews: loadingNews,
+            openInfihex: openInfihex,
+            convertDateTime: convertDateTime,
+            appVersion: unoproj.version
+        };
+
+        
+
+    </JavaScript>
+    
+    <Panel ux:Name="contentPlaceholder" Height="100%" Width="100%" />
+    
+    <DockPanel>
+
+        <EdgeNavigator HitTestMode="LocalVisualAndChildren">
+            <Panel ux:Name="sidebar" Edge="Left" Width="100%" Margin="0,0,56,0" Background="#2c3e50">
+                <Shadow ux:Name="shadow" Angle="180" Distance="8" Size="16" Color="#0000" />
+                <ActivatingAnimation>
+                    <Change shadow.Color="#0004" />
+                    <Change sidebarFade.Opacity="1" />
+                    <Change mainScrollView.HitTestMode="None" />
+                </ActivatingAnimation>
+                <DockPanel ClipToBounds="false">
+                    <StackPanel Margin="0,10" Alignment="TopLeft" ItemSpacing="0" ClipToBounds="true" Width="100%" Height="100%">
+                        <StatusBarBackground />
+                        <SidebarButton Text="News" Icon="public">
+                            <Clicked>
+                                <Callback Handler="{reloadHandler}" />
+                                <NavigateToggle Target="sidebar" />
+                            </Clicked>
+                        </SidebarButton>
+                    </StackPanel>
+                    <StackPanel Dock="Bottom" Margin="16">
+                        <Text FontSize="12" Alignment="Center" Value="v{appVersion}" Color="#7f8c8d" Padding="0,20,0,0"></Text>
+                        <Text FontSize="12" Alignment="Center" Value="This app is a part of the LANMS package" Color="#7f8c8d">
+                            <Clicked>
+                                <Callback Handler="{openInfihex}" />
+                            </Clicked>
+                        </Text>
+                        <Text FontSize="12" Alignment="Center" Value="LANMS is made with &lt;3 by Infihex" Color="#7f8c8d">
+                            <Clicked>
+                                <Callback Handler="{openInfihex}" />
+                            </Clicked>
+                        </Text>
+                    </StackPanel>
+                </DockPanel>
+            </Panel>
+            
+            <DockPanel>
+                <Rectangle ux:Name="sidebarFade" Layer="Overlay" Color="#0005" Opacity="0" HitTestMode="None" />
+                <StackPanel ux:Name="statusAndAppBar" Dock="Top" Color="#303641">
+                    <Shadow Size="3" Distance="1" />
+                    <StatusBarBackground Background="#303641" />
+                    <Grid Columns="auto,1*,auto">
+                        <Panel Height="56">
+                            <Hamburger>
+                                <Clicked>
+                                    <NavigateToggle Target="sidebar" />
+                                </Clicked>
+                            </Hamburger>
+                        </Panel>
+                        <Panel Height="56">
+                            <Image File="Assets/Logo/downlink.png" Alignment="Center" />
+                        </Panel>
+                        <Panel Width="56" Height="56">
+                        </Panel>
+                    </Grid>
+                </StackPanel>
+            </DockPanel>
+        </EdgeNavigator>
+        
+        <ScrollView ux:Name="mainScrollView" LayoutMode="PreserveScrollPosition" ClipToBounds="false" Margin="0,56,0,0" SnapMinTransform="false">
+            <DockPanel>
+                <StatusBarBackground />
+                <Reload />
+
+                <WhileTrue Value="{errorReload}">
+                    <Change mainScrollView.Background="#FFF" />
+                    <StackPanel ux:Name="emptyView" Alignment="HorizontalCenter" ContentAlignment="Center" ItemSpacing="0" Margin="0,25">
+                        <Image File="Assets/Image/no_connection.png" />
+                        <Text Alignment="Center" FontSize="20" Font="OpenSansSemiBold">Couldn't load any articles!</Text>
+                        <Text Alignment="Center" FontSize="14" Font="OpenSansLight" TextTruncation="None" TextWrapping="Wrap" Margin="25,0" TextAlignment="Center">Either a API-error or you do not have access to the internet.</Text>
+                    </StackPanel>
+                    <Change mainScrollView.ScrollPosition="0" Delay="0" />
+                </WhileTrue>
+
+                <WhileFalse Value="{errorReload}">
+                    <Change mainScrollView.Background="#F5F5F5" />
+                    <Selection MinCount="0" MaxCount="1" />
+                    <StackPanel Background="#F5F5F5">
+                        <Each Items="{data}">
+                            <Deferred>
+                                <EventCard layoutTarget="contentPlaceholder">
+                                    <Selectable Value="{id}" />
+                                    <WhileSelected>
+                                        <Change mainScrollView.LayoutMode="PreserveVisual" />
+                                        <Change mainScrollView.UserScroll="false" DelayBack="0" />
+                                        <Move Target="statusAndAppBar" Y="-1" RelativeTo="Size" Duration="1.0" Easing="QuarticOut" EasingBack="QuarticIn" />
+                                    </WhileSelected>
+                                </EventCard>
+                            </Deferred>
+                        </Each>
+                        <WhileTrue Value="{errorAddNews}">
+                            <Change mainScrollView.Background="#e74c3c" />
+                            <StackPanel Background="#e74c3c" Height="150" ContentAlignment="Center" ItemSpacing="5">
+                                <MaterialIcon Value="sentiment_very_dissatisfied" FontSize="28" Alignment="Center" />
+                                <Text Color="#fff" Alignment="Center" Font="OpenSansSemiBold" Value="Couldn't get more news!" />
+                                <Text Color="#fff" Alignment="Center" Font="OpenSansLight" Value="Please try again later." />
+                            </StackPanel>
+                        </WhileTrue>
+                    </StackPanel>
+                </WhileFalse>
+            </DockPanel>
+            <WhileFalse Value="{errorAddNews}">
+                <Scrolled To="End" Within="200" Handler="{addNews}" />
+            </WhileFalse>
+        </ScrollView>
+        
+        <BottomBarBackground Dock="Bottom" />
+    </DockPanel>
+    
+    <StackPanel ux:Class="EventCard" ImageHeight="150" Margin="0,0,0,20">
+        <float ux:Property="ImageHeight" />
+        <Panel ux:Dependency="layoutTarget" />
+    
+        <OnBackButton>
+            <ToggleSelection Mode="RemoveOnly" />
+        </OnBackButton>
+        
+        <WhileSelected>
+
+            <Change imageAndContent.LayoutMaster="layoutTarget" DelayBack="0" Delay="0" />
+            <BringToFront />
+            
+            <Change image.Margin="0" Duration="0.25" Delay="0" DelayBack="0" Easing="CubicInOut" />
+
+            <Change detailArticleHeader.Margin="56,0,30,15" Duration="0.3" DelayBack="0" />
+            <Change content.Margin="56,15,30,15" Duration="0.3" DelayBack="0" />
+
+            <Change detailTitle.FontSize="22" Duration="0.3" DelayBack="0" />
+
+        </WhileSelected>
+        
+        <WhileSelected Invert="true">
+
+            <Change contentScrollView.Opacity="0.5" Duration="0.3" DelayBack="0" />
+            <Change content.Opacity="0.5" Duration="0.5" DelayBack="0" />
+            <Move Target="content" Y="-100" Duration="0.7" DelayBack="0.3" Delay="1" Easing="SinusoidalIn" />
+            
+            <Change detailNavigationBar.Opacity="0" Duration="0.2" Delay="0" />
+            <Change detailNavigationBar.HitTestMode="None" />
+
+            <Change detailArticleHeader.Margin="20,0,30,15" Duration="0.3" DelayBack="0" />
+            <Change content.Margin="20,15,30,15" Duration="0.3" DelayBack="0" />
+
+        </WhileSelected>
+    
+        <Panel ux:Name="contentLimitPanel" Height="{ReadProperty ImageHeight}">
+
+            <DockPanel ux:Name="imageAndContent" ClipToBounds="true" HitTestMode="LocalBoundsAndChildren">
+                <LayoutAnimation>
+                    <Move X="1" RelativeTo="WorldPositionChange" DelayBack="0" Duration="0.2" Easing="QuadraticInOut" />
+                    <Move Y="1" RelativeTo="WorldPositionChange" DelayBack="0" Duration="0.2" Easing="SinusoidalIn" />
+                    <Resize X="1" Y="1" RelativeTo="SizeChange" DelayBack="0" Duration="0.25" Easing="QuadraticIn" />
+                </LayoutAnimation>
+                
+                <Panel Dock="Top" MinHeight="{ReadProperty ImageHeight}">
+                    <StackPanel ux:Name="detailNavigationBar">
+                        <BackButton Alignment="Left" Margin="0,25,0,0">
+                            <Clicked>
+                                <ToggleSelection Mode="RemoveOnly" />
+                            </Clicked>
+                        </BackButton>
+                    </StackPanel>
+                
+                    <Panel>
+                        <Clicked>
+                            <ToggleSelection Mode="AddOnly" />
+                        </Clicked>
+                        
+                        <StackPanel ux:Name="detailArticleHeader" Alignment="BottomLeft" ClipToBounds="true">
+                            <PublishedText Value="{published_at_human}" />
+                            <TitleText ux:Name="detailTitle" Value="{title}" />
+                        </StackPanel>
+                        
+                        <Rectangle ux:Name="image" Layer="Background">
+                            <SolidColor Color="#444" />
+                            <ImageFill Url="{image}" StretchMode="UniformToFill" WrapMode="ClampToEdge" />
+                            <LinearGradient>
+                                <GradientStop Color="0,0,0, 0.1" Offset="0" />
+                                <GradientStop Color="0,0,0, 0.92" Offset="1" />
+                            </LinearGradient>
+                        </Rectangle>
+                        
+                    </Panel>
+                </Panel>
+                
+                <ScrollView ux:Name="contentScrollView" Background="#fff" Padding="0,0,0,20">
+                    <StackPanel ux:Name="content" ItemSpacing="10">
+                        <BodyText Value="{content}" Margin="0,15,0,0" />
+                        <Rectangle Height="1" Color="#888888" Margin="0,25,0,0" Opacity="0.2" />
+                        <DockPanel Alignment="VerticalCenter">
+                            <Circle Dock="Left" Width="40" Height="40">
+                                <ImageFill Url="{portrait}" StretchMode="UniformToFill" />
+                            </Circle>
+                            <StackPanel Padding="16,0" Alignment="VerticalCenter">
+                                <MutedText Value="{author}" FontSize="14" Alignment="Left" />
+                                <MutedText Value="{published_at}" FontSize="12" Alignment="Left" />
+                            </StackPanel>
+                        </DockPanel>
+                        <MutedText Margin="0,20,0,20">Last Updated: {updated_at} by {editor}</MutedText>
+                    </StackPanel>
+                </ScrollView>
+            </DockPanel>
+        </Panel>
+        
+        <StackPanel Margin="20" ItemSpacing="10">
+            <Clicked>
+                <ToggleSelection Mode="AddOnly" />
+            </Clicked>
+            <BodyText Value="{summary}" />
+        </StackPanel>
+        
+        <Rectangle Layer="Background" Color="#FFF">
+            <Shadow Size="2" Distance="2" Color="0,0,0, 0.25" />
+        </Rectangle>
+    </StackPanel>
+
+    <BottomBarBackground Dock="Bottom" />
+
+</App>

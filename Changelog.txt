@@ -1,0 +1,46 @@
+2.0.0
+- First release
+
+2.0.1
+- Added hamburglar
+- Added more info to the articles
+- Updated animations, even more smoothness
+- Updated AppBar
+- Fixed back button in articles
+
+2.0.2
+- Changed icons to material icons; hamburger, back & news
+- Fixed menu in sidebar
+
+2.0.3
+- Added refresh capability for news
+- Added error view when it can't get any news at all
+- Added error message when it can't add more news
+- Added a new author view on articles
+
+2.0.4
+- Fixed formatting for updated_at date and time
+- Fixed top five news being added to the bottom when scrolling down
+
+2.0.5
+- Fixed news skipping 5 news when reloading
+
+2.0.6
+- Added support for Android Oreo
+- Minor changes for data import
+- Removed unused lines of code
+- Minor changes of the design
+
+2.0.7
+- Added version number of the app in the sidebar
+- Fixed the head logo being offset
+
+2.0.8
+- Fixed spelling mistake
+- Changed the app name and display name
+
+2.0.9
+- Fixed scrolling/clicking articles not working in Pie
+
+2.0.10
+- Updated to new logos

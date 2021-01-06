@@ -1,0 +1,36 @@
+<Panel ux:Class="Reload" ClipToBounds="True" Dock="Top">
+
+	<StatusBarBackground />
+
+	<MaterialIcon ux:Class="RefreshIcon" Value="loop" FontSize="28" Color="#ecf0f1" Opacity="0" />
+
+	<!-- places all cog wheels and move rotates them so they fit together -->
+	<Panel ux:Name="refreshPanel" Background="#34495e" Alignment="Top" Height="0" MinHeight="0">
+		<RefreshIcon ux:Name="refreshIcon1" Alignment="Center">
+			<Rotation ux:Name="ri1Rotation" />
+		</RefreshIcon>
+	</Panel>
+
+	<!-- set the hight of refreshPanel so it stays open while loading -->
+	<WhileTrue ux:Name="retainSpace">
+		<Change refreshPanel.MinHeight="100" Duration="0" DurationBack="0.3" Easing="CircularIn" />
+		<Change refreshIcon1.Opacity="100" Duration="0" DurationBack="0"/>
+	</WhileTrue>
+
+	<!-- Rotate the wheels as we pull down -->
+	<ScrollingAnimation Range="SnapMin">
+		<Change refreshPanel.Height="150" Duration="1" />
+		<Change ri1Rotation.Degrees="200" Duration="1" />
+		<Change refreshIcon1.Opacity="100" Duration="0" DurationBack="0"/>
+	</ScrollingAnimation>
+
+	<PullToReload IsLoading="{isLoading}" ReloadHandler="{reloadHandler}">
+		<State ux:Binding="Pulling">
+			<!-- animate elements while pulling here -->
+		</State>
+		<State ux:Binding="Loading">
+			<Change retainSpace.Value="true" DurationBack="0.5" />
+			<Spin Target="refreshIcon1" Frequency="-2" />
+		</State>
+	</PullToReload>
+</Panel>

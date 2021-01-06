@@ -1,0 +1,9 @@
+<StackPanel Orientation="Horizontal" ux:Class="SidebarButton" Height="48" Padding="16,0,0,0" ContentAlignment="VerticalCenter" HitTestMode="LocalBounds">
+	<string ux:Property="Text" />
+	<string ux:Property="Icon" />
+	<MaterialIcon Value="{ReadProperty Icon}" FontSize="22" Alignment="VerticalCenter" />
+	<Text Value="{ReadProperty Text}" Margin="16,0,0,0" Color="#FFF" FontSize="20" Alignment="VerticalCenter" />
+	<WhilePressed>
+        <Change this.Color="#2c3e55" Duration="1" />
+    </WhilePressed>
+</StackPanel>

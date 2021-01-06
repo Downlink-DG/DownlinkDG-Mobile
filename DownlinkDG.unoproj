@@ -1,0 +1,56 @@
+{
+  "RootNamespace": "no.infihex.downlinkdg",
+  "Name": "Downlink DG",
+  "Title": "Downlink",
+  "Description": "Official App for the LAN-Party; Downlink",
+  "Publisher": "Infihex",
+  "Version": "2.0.10",
+  "VersionCode": 160,
+  "Android": {
+    "Package": "no.infihex.downlinkdg",
+    "Key": {
+      "Alias": "application",
+      "AliasPassword": "infihex",
+      "Store": "release.keystore",
+      "StorePassword": "infihex"
+    },
+    "Icons": {
+      "LDPI": "Assets/App/ldpi.png",
+      "MDPI": "Assets/App/mdpi.png",
+      "HDPI": "Assets/App/hdpi.png",
+      "XHDPI": "Assets/App/xhdpi.png",
+      "XXHDPI": "Assets/App/xxhdpi.png",
+      "XXXHDPI": "Assets/App/xxxhdpi.png"
+    },
+    "SDK": {
+      "BuildToolsVersion": "26.0.0",
+      "CompileVersion": 26,
+      "MinVersion": 19,
+      "TargetVersion": 26
+    }
+  },
+  "Packages": [
+    "Fuse",
+    "FuseJS",
+    "Fuse.Launcher"
+  ],
+  "Mobile": {
+    "Orientations": "Portrait",
+    "ShowStatusbar": true
+  },
+  "Includes": [
+    "Assets/JS/Moment-with-locales.js:Bundle",
+    "*"
+  ],
+  "Projects": [
+    "fuse_modules/bolav/fuse-unoproject/src/UnoProject/UnoProject.unoproj"
+  ],
+  "Excludes": [
+    "fuse_modules/"
+  ],
+  "FusePM": {
+    "Dependencies": [
+      "https://github.com/bolav/fuse-unoproject"
+    ]
+  }
+}
